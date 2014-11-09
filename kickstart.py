@@ -18,7 +18,7 @@ app.secret_key = 'fastfacts'
 
 lang = "en"
 API_KEY = "NOOOOOOOO"
-number_to_language = {"15122707266":"en", "18329393590":"sw"}
+number_to_language = {"+15122707266":"en", "+18329393590":"sw"}
 
 def handle_query(query, lang):
 		query = re.sub('!?/._@#:', '', query)
