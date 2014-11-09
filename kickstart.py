@@ -114,7 +114,7 @@ def sms():
 		wolfram_result = handle_wolfram_query(query, "en")
 		resp = twilio.twiml.Response()
 		if wolfram_result is not "":
-			resp.message(unicode(wolfram_result))
+			resp.message(unicode(wolfram_result)[:157])
 		resp.message(unicode(wikipedia_result))
 		return str(resp)
 
