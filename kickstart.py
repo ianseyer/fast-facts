@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.secret_key = 'fastfacts'
 
 def handle_query(query):
-		query = query.translate(None, '!?/._@#:')
+		query = re.sub('!?/._@#:', '', query)
 		request_url = "http://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
 		r = requests.get(request_url)
 
