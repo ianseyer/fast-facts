@@ -110,11 +110,11 @@ def sms():
 			resp.message("Sorry, you must enter at least a word!") #translate this
 			return str(resp)
 		print request.args['To']
-		wikipedia_result = handle_wikipedia_query(query, number_to_language[request.args['To']])	
+		wikipedia_result = handle_wikipedia_query(query, number_to_language[request.args['To']])[0]
 		wolfram_result = handle_wolfram_query(query, "en")
 		print wolfram_result
 		resp = twilio.twiml.Response()
-		resp.message(unicode(result[0])+unicode(wolfram_result))
+		resp.message(unicode(wikipedia_result)+unicode(wolfram_result))
 		return str(resp)
 
 	except:
