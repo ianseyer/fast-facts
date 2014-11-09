@@ -16,6 +16,12 @@ import twilio.twiml
 app = Flask(__name__)
 app.secret_key = 'fastfacts'
 
+language_code = "en"
+
+def change_language_code(query):
+	# call gus' thing
+	language_code = #stuff
+
 def handle_query(query):
 		query = re.sub('!?/._@#:', '', query)
 		request_url = "http://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
@@ -30,9 +36,11 @@ def handle_query(query):
 		return (out, title)
 
 @app.route('/',  methods=['GET', 'POST'])
+def index():
+	return redirect('/search')
+	
 @app.route('/search', methods=['GET', 'POST'])
 def query():
-
 	if request.method == 'GET':
 		#just display the input form
 		return render_template('search.html')
