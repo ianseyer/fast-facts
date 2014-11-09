@@ -22,7 +22,6 @@ number_to_language = {"+15122707266":"en", "+18329393590":"sw"}
 
 def handle_query(query, lang):
 		query = re.sub('!?/._@#:', '', query)
-		print lang
 		request_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
 		r = requests.get(request_url)
 
@@ -34,6 +33,8 @@ def handle_query(query, lang):
 		first = soup.find_all('p')[0].get_text()
 		first = re.sub('', '', first)
 		out = soup.find_all('p')[0].get_text()[0:157]+"..."
+		if "Kutoka Wikipedia, ensaiklopidia huru" in out:
+			out = soup.find_all('p')[0].get_text()[36:193]+"..."
 		return (out, title, lang)
 
 @app.route('/',  methods=['GET', 'POST'])
