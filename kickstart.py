@@ -59,7 +59,6 @@ def query():
 @app.route('/sms')
 def sms():
 	resp = twilio.twiml.Response()
-
 	try:
 		query = request.args['Body']
 		if query is None:
