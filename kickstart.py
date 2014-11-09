@@ -18,6 +18,9 @@ app.secret_key = 'fastfacts'
 
 language_code = "en"
 
+def translate(input):
+	#handle translation
+	pass
 
 def handle_query(query):
 		query = re.sub('!?/._@#:', '', query)
@@ -49,8 +52,14 @@ def query():
 
 @app.route('/sms')
 def sms():
+	resp = twilio.twiml.Response()
+
 	try:
 		query = request.args['Body']
+		if query is None:
+			resp.message("Sorry, you must enter at least a word!") #translate this
+			return str(resp)
+			
 	except KeyError:
 		resp = twilio.twiml.Response()
 		resp.message("Sorry, something went wrong!") #don't forget to translate this eventually
