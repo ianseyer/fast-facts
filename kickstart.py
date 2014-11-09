@@ -55,12 +55,10 @@ def sms():
 		resp = twilio.twiml.Response()
 		resp.message("Sorry, something went wrong!") #don't forget to translate this eventually
 		return str(resp)
-	
-	print query
+
 	result = handle_query(query)
 
 	resp = twilio.twiml.Response()
-	print removeNonAscii(result[0])
 	resp.message(unicode(result[0]))
 	return str(resp)
 	
