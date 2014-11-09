@@ -2,15 +2,17 @@
 <html>
 
 <body>
-Fast Facts<br>
+M-Facti<br>
 <form action="/search" method="POST">
   <input type="text" id="q" name="q"> 
   <input type="submit" value="Go">
 </form>
 <p id="output">{{result}}</p>
 <p id="link"><a href="{{link}}">Read more</a></p>
+<br><p id="goog"><a href="{{goog}}">Google Search</a></p>
 <style> 
 body{
+	background-color: white;
 	text-align: center;
 	margin: 0;
     padding: 0;
@@ -20,7 +22,6 @@ p{
     padding: 0;
 }
  .textbox { 
-	font-size: 1.0em;
 	background-color: white;
 	margin: 0;
     padding: 0;

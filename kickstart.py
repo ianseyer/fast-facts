@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.secret_key = 'fastfacts'
 
 def handle_query(query):
-		query = query.translate(None, '!?/._@#:')
+		query = re.sub('!?/._@#:', '', query)
 		request_url = "http://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
 		r = requests.get(request_url)
 
@@ -38,8 +38,9 @@ def query():
 		return render_template('search.html')
 
 	elif request.method == 'POST':
-		result = handle_query(request.form['q'])
-		return render_template('search.html', result=result[0], link="http://en.wikipedia.org/w/index.php?action=render&title="+result[1])
+		query = re.sub('!?/._@#:', '', request.form['q'])
+		result = handle_query(query)
+		return render_template('search.html', result=result[0], link="http://en.wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
 
 @app.route('/sms')
 def sms():
