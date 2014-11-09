@@ -12,7 +12,7 @@ M-Facti<br>
   <input type="text" id="q" name="q"> 
   <input type="submit" value="Go">
 </form>
-<div id="responses" {% if result == None: print('display:none') endif%}>
+<div id="responses" {% if result == None: print(' style="display:none;" ') endif%}>
 <p id="output">{{result}}</p>
 <p id="link"><a href="{{link}}">Read more</a></p>
 <p id="goog"><a href="{{goog}}">Google Search</a></p>
