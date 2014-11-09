@@ -96,6 +96,11 @@ def wolfram(query="zimbabwe president"):
 		result = ""
 	return result
 
+def send_message(body):
+	resp = twilio.twiml.Response()
+	resp.message(body)
+	return str(resp)
+
 @app.route('/sms')
 def sms():
 	"""
@@ -112,10 +117,9 @@ def sms():
 		print request.args['To']
 		wikipedia_result = handle_wikipedia_query(query, number_to_language[request.args['To']])[0]
 		wolfram_result = handle_wolfram_query(query, "en")
-		print wolfram_result
-		resp = twilio.twiml.Response()
-		resp.message(unicode(wikipedia_result)+unicode(wolfram_result))
-		return str(resp)
+		wiki = send_message(unicode(wikipedia_result))
+		wolfram = send_message(unicode(wolfram_result))
+		return str(wiki+wolfram)
 
 	except:
 		resp = twilio.twiml.Response()
