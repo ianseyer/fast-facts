@@ -16,11 +16,14 @@ app.secret_key = 'fastfacts'
 
 @app.route('/search', methods=['GET', 'POST'])
 def query():
+
 	if request.method == 'GET':
 		#just display the input form
 		return render_template('search.html')
 
-	else:
+	elif request.method == 'POST':
+		print 'method was post'
+		print request.form['q']
 		#display the form and results
 		query = request.form['q']
 
@@ -33,7 +36,7 @@ def query():
 		soup = BeautifulSoup(response.text)
 
 		out = soup.p.get_text()[0:157]+"..."
-		return render_template('search.html', results=out)
+		return render_template('search.html', result=out)
 
 if __name__ == '__main__':
 	app.run(debug=True)
