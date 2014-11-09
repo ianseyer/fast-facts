@@ -18,9 +18,6 @@ app.secret_key = 'fastfacts'
 
 language_code = "en"
 
-def change_language_code(query):
-	# call gus' thing
-	language_code = #stuff
 
 def handle_query(query):
 		query = re.sub('!?/._@#:', '', query)
@@ -52,7 +49,13 @@ def query():
 
 @app.route('/sms')
 def sms():
-	query = request.args['Body']
+	try:
+		query = request.args['Body']
+	except KeyError:
+		resp = twilio.twiml.Response()
+		resp.message("Sorry, something went wrong!") #don't forget to translate this eventually
+		return str(resp)
+	
 	print query
 	result = handle_query(query)
 
