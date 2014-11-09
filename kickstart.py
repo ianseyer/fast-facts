@@ -16,23 +16,17 @@ import twilio.twiml
 app = Flask(__name__)
 app.secret_key = 'fastfacts'
 
-language_code = "en"
-
-def translate(input):
-	#handle translation
-	pass
+lang = "en"
+API_KEY = "NOOOOOOOO"
 
 def handle_query(query):
 		query = re.sub('!?/._@#:', '', query)
-		langval = "https://www.googleapis.com/language/translate/v2/detect?key="+API_KEY+"&q="+query
-		lang = langval.json()['data']['detections']['language']
-		lang = lang(0..1)
 		print lang
 		request_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
 		r = requests.get(request_url)
 
 		title = r.json()['query']['search'][0]['title']
-		request_url = "http://en.wikipedia.org/w/index.php?action=render&title="+title
+		request_url = "http://"+lang+".wikipedia.org/w/index.php?action=render&title="+title
 		response = requests.get(request_url)
 		soup = BeautifulSoup(response.text)
 		[each.decompose() for each in soup.find_all('table')]
