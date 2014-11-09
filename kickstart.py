@@ -113,8 +113,9 @@ def sms():
 		wikipedia_result = handle_wikipedia_query(query, number_to_language[request.args['To']])[0]
 		wolfram_result = handle_wolfram_query(query, "en")
 		resp = twilio.twiml.Response()
+		if wolfram_result is not "":
+			resp.message(unicode(wolfram_result))
 		resp.message(unicode(wikipedia_result))
-		resp.message(unicode(wolfram_result))
 		return str(resp)
 
 	except:
