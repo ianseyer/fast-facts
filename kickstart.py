@@ -38,8 +38,9 @@ def query():
 		return render_template('search.html')
 
 	elif request.method == 'POST':
-		result = handle_query(request.form['q'])
-		return render_template('search.html', result=result[0], link="http://en.wikipedia.org/w/index.php?action=render&title="+result[1])
+		query = re.sub('!?/._@#:', '', request.form['q'])
+		result = handle_query(query)
+		return render_template('search.html', result=result[0], link="http://en.wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
 
 @app.route('/sms')
 def sms():
