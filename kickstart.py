@@ -83,7 +83,7 @@ def query():
 
 	elif request.method == 'POST':
 		query = re.sub('!?/._@#:', '', request.form['q'])
-		result = handle_query(query, "en")
+		result = handle_wikipedia_query(query, "en")
 		return render_template('search.html', result=result[0], link="http://"+result[2]+".wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
 
 @app.route('/wolfram')
