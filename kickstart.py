@@ -18,8 +18,9 @@ app.secret_key = 'fastfacts'
 
 lang = "en"
 API_KEY = "NOOOOOOOO"
+number_to_language = {"15122707266":"en", "18329393590":"sw"}
 
-def handle_query(query):
+def handle_query(query, lang):
 		query = re.sub('!?/._@#:', '', query)
 		print lang
 		request_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
@@ -58,17 +59,16 @@ def sms():
 		if query is None:
 			resp.message("Sorry, you must enter at least a word!") #translate this
 			return str(resp)
-			
+		
+		result = handle_query(query, number_to_language[request.args['To']])	
+		resp = twilio.twiml.Response()
+		resp.message(unicode(result[0]))
+		return str(resp)
+
 	except KeyError:
 		resp = twilio.twiml.Response()
 		resp.message("Sorry, something went wrong!") #don't forget to translate this eventually
 		return str(resp)
-
-	result = handle_query(query)
-
-	resp = twilio.twiml.Response()
-	resp.message(unicode(result[0]))
-	return str(resp)
 	
 
 if __name__ == '__main__':
