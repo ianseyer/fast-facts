@@ -11,9 +11,10 @@ for the Developers Doing Development hack-a-thon held at Chicon Collective in Au
 """
 #foreign
 from flask import Flask, render_template, jsonify, request, redirect
-import requests, re
+import requests, re, string
 from bs4 import BeautifulSoup
 import twilio.twiml
+import xml.etree.ElementTree as ET
 
 #domestic
 #none
@@ -24,22 +25,22 @@ app.secret_key = 'fastfacts'
 lang = "en"
 number_to_language = {"+15122707266":"en", "+18329393590":"sw"}
 
-def handle_query(query, lang):
+def handle_wikipedia_query(query, lang):
 		"""
 		searches via wikipedias API, and then returns the slice of the first paragraph.
 		"""
 		query = re.sub('!?/._@#:', '', query)
-		request_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
-		r = requests.get(request_url)
+		wikipedia_search_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
+		wikipedia_response = requests.get(wikipedia_search_url)
 
 		try:
-			title = r.json()['query']['search'][0]['title']
+			title = wikipedia_response.json()['query']['search'][0]['title']
 		except IndexError: #there were no results
 			return ("Nothing was found!", "Nothing was found!", "en")
 
-		request_url = "http://"+lang+".wikipedia.org/w/index.php?action=render&title="+title
-		response = requests.get(request_url)
-		soup = BeautifulSoup(response.text)
+		wikipedia_render_url = "http://"+lang+".wikipedia.org/w/index.php?action=render&title="+title
+		wikipedia_response = requests.get(wikipedia_render_url)
+		soup = BeautifulSoup(wikipedia_response.text)
 		[each.decompose() for each in soup.find_all('table')] #remove side tables, so we don't accidentally pull in table data
 		first = soup.find_all('p')[0].get_text()
 		first = re.sub('', '', first)
@@ -47,6 +48,17 @@ def handle_query(query, lang):
 		if "Kutoka Wikipedia, ensaiklopidia huru" in out: #this phrase is the opening of wikipedia articles (in swahili) that have been translated, so ignore it and pull the next paragraph
 			out = soup.find_all('p')[1].get_text()[0:157]+"..."
 		return (out, title, lang)
+
+def handle_wolfram_query(query, lang):
+	app_id = "U2YWX7-8YK5VU8L2J"
+	endpoint = "http://api.wolframalpha.com/v2/query?input="+query+"&format=plaintext&appid="+app_id
+	wolfram_response = requests.get(endpoint).text
+	root = ET.fromstring(filter(lambda x: x in string.printable, wolfram_response))
+	try:
+		result = root.findall(".//pod[@title='Result']/subpod/")[0].text
+	except IndexError: #no result, or not a useful one
+		result = ""
+	return result
 
 @app.route('/',  methods=['GET', 'POST'])
 def index():
@@ -66,6 +78,17 @@ def query():
 		result = handle_query(query, "en")
 		return render_template('search.html', result=result[0], link="http://"+result[2]+".wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
 
+@app.route('/wolfram')
+def wolfram(query="zebra"):
+	output = handle_wolfram_query(query, "en")
+	print output
+	root = ET.fromstring(filter(lambda x: x in string.printable, output))
+	try:
+		result = root.findall(".//pod[@title='Result']/subpod/")[0].text
+	except IndexError: #no result, or not a useful one
+		result = ""
+	return result
+
 @app.route('/sms')
 def sms():
 	"""
@@ -80,9 +103,11 @@ def sms():
 			resp.message("Sorry, you must enter at least a word!") #translate this
 			return str(resp)
 		print request.args['To']
-		result = handle_query(query, number_to_language[request.args['To']])	
+		wikipedia_result = handle_wikipedia_query(query, number_to_language[request.args['To']])	
+		wolfram_result = handle_wolfram_query(query, number_to_language[request.args['To']])
 		resp = twilio.twiml.Response()
 		resp.message(unicode(result[0]))
+		resp.message(unicode(wolfram_result))
 		return str(resp)
 
 	except:
