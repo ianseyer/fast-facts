@@ -34,7 +34,7 @@ def handle_query(query, lang):
 		first = re.sub('', '', first)
 		out = soup.find_all('p')[0].get_text()[0:157]+"..."
 		if "Kutoka Wikipedia, ensaiklopidia huru" in out:
-			out = soup.find_all('p')[0].get_text()[36:193]+"..."
+			out = soup.find_all('p')[1].get_text()[0:157]+"..."
 		return (out, title, lang)
 
 @app.route('/',  methods=['GET', 'POST'])
