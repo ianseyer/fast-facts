@@ -114,7 +114,7 @@ def sms():
 		wolfram_result = handle_wolfram_query(query, "en")
 		print wolfram_result
 		resp = twilio.twiml.Response()
-		resp.message(unicode(result[0]+wolfram_result))
+		resp.message(unicode(result[0])+unicode(wolfram_result))
 		return str(resp)
 
 	except:
