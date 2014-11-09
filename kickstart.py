@@ -65,6 +65,7 @@ def handle_wolfram_query(query, lang):
 		result = root.findall(".//pod[@title='Result']/subpod/")[0].text
 	except IndexError: #no result, or not a useful one
 		result = ""
+	print result
 	return result
 
 @app.route('/',  methods=['GET', 'POST'])
@@ -86,9 +87,8 @@ def query():
 		return render_template('search.html', result=result[0], link="http://"+result[2]+".wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
 
 @app.route('/wolfram')
-def wolfram(query="zebra"):
+def wolfram(query="zimbabwe president"):
 	output = handle_wolfram_query(query, "en")
-	print output
 	root = ET.fromstring(filter(lambda x: x in string.printable, output))
 	try:
 		result = root.findall(".//pod[@title='Result']/subpod/")[0].text
@@ -112,6 +112,7 @@ def sms():
 		print request.args['To']
 		wikipedia_result = handle_wikipedia_query(query, number_to_language[request.args['To']])	
 		wolfram_result = handle_wolfram_query(query, "en")
+		print wolfram_result
 		resp = twilio.twiml.Response()
 		resp.message(unicode(result[0]+wolfram_result))
 		return str(resp)
