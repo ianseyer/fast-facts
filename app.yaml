@@ -1,0 +1,13 @@
+application: fast-facts
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /
+  script: kickstart.app
+
+- url: /search\.html
+  script: kickstart.app
+
