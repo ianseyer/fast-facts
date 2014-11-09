@@ -21,7 +21,11 @@ language_code = "en"
 
 def handle_query(query):
 		query = re.sub('!?/._@#:', '', query)
-		request_url = "http://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
+		langval = "https://www.googleapis.com/language/translate/v2/detect?key="+API_KEY+"&q="+query
+		lang = langval.json()['data']['detections']['language']
+		lang = lang(0..1)
+		print lang
+		request_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
 		r = requests.get(request_url)
 
 		title = r.json()['query']['search'][0]['title']
@@ -29,8 +33,10 @@ def handle_query(query):
 		response = requests.get(request_url)
 		soup = BeautifulSoup(response.text)
 		[each.decompose() for each in soup.find_all('table')]
+		first = soup.find_all('p')[0].get_text()
+		first = re.sub('', '', first)
 		out = soup.find_all('p')[0].get_text()[0:157]+"..."
-		return (out, title)
+		return (out, title, lang)
 
 @app.route('/',  methods=['GET', 'POST'])
 def index():
@@ -45,7 +51,7 @@ def query():
 	elif request.method == 'POST':
 		query = re.sub('!?/._@#:', '', request.form['q'])
 		result = handle_query(query)
-		return render_template('search.html', result=result[0], link="http://en.wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
+		return render_template('search.html', result=result[0], link="http://"+result[2]+".wikipedia.org/w/index.php?action=render&title="+result[1], goog="https://www.google.com/search?q="+query)
 
 @app.route('/sms')
 def sms():
