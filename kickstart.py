@@ -65,7 +65,7 @@ def sms():
 		resp.message(unicode(result[0]))
 		return str(resp)
 
-	except KeyError:
+	except:
 		resp = twilio.twiml.Response()
 		resp.message("Sorry, something went wrong!") #don't forget to translate this eventually
 		return str(resp)
