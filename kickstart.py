@@ -62,7 +62,7 @@ def sms():
 		if query is None:
 			resp.message("Sorry, you must enter at least a word!") #translate this
 			return str(resp)
-		
+		print request.args['To']
 		result = handle_query(query, number_to_language[request.args['To']])	
 		resp = twilio.twiml.Response()
 		resp.message(unicode(result[0]))
