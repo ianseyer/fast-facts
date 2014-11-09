@@ -25,11 +25,17 @@ app.secret_key = 'fastfacts'
 lang = "en"
 number_to_language = {"+15122707266":"en", "+18329393590":"sw"}
 
+def shorten_resp(first):
+	first = re.sub('\(.*\) ', '', first)
+	first = re.sub('\[.*\] ', '', first)
+	out = first[0:157]+"..."
+	return out
+
 def handle_wikipedia_query(query, lang):
 		"""
 		searches via wikipedias API, and then returns the slice of the first paragraph.
 		"""
-		query = re.sub('!?/._@#:', '', query)
+		query = re.sub('[^\w\s]', '', query)
 		wikipedia_search_url = "http://"+lang+".wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch="+query+"&continue=&srprop=timestamp"
 		wikipedia_response = requests.get(wikipedia_search_url)
 
@@ -44,9 +50,10 @@ def handle_wikipedia_query(query, lang):
 		[each.decompose() for each in soup.find_all('table')] #remove side tables, so we don't accidentally pull in table data
 		first = soup.find_all('p')[0].get_text()
 		first = re.sub('', '', first)
-		out = soup.find_all('p')[0].get_text()[0:157]+"..."
+		out = shorten_resp(soup.find_all('p')[0].get_text())
 		if "Kutoka Wikipedia, ensaiklopidia huru" in out: #this phrase is the opening of wikipedia articles (in swahili) that have been translated, so ignore it and pull the next paragraph
-			out = soup.find_all('p')[1].get_text()[0:157]+"..."
+			out = shorten_resp(out = soup.find_all('p')[1].get_text())
+
 		return (out, title, lang)
 
 def handle_wolfram_query(query, lang):
